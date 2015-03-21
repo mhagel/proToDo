@@ -9,14 +9,35 @@
 
         var myApp = angular.module("exampleApp", []);
 
-        myApp.controller("dayCtrl", function ($scope) {
-            var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            $scope.day = dayNames[new Date().getDay()];
+        myApp.controller("dayCtrl", function ($scope, days) {
+            $scope.day = days.today;
         });
             
-        myApp.controller("tomorrowCtrl", function ($scope) {
+        myApp.controller("tomorrowCtrl", function ($scope, days) {
+            $scope.day = days.tomorrrow;
+        });
+
+        myApp.directive("highlight", function () {
+            return function (scope, element, attrs) {
+                if (scope.day == attrs["highlight"]) {
+                    element.css("color", "red");
+                }
+            }
+        });
+
+        myApp.filter("dayName", function () {
             var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",];
-            $scope.day = dayNames[(new Date().getDay() + 1) % 7];
+            return function (input) {
+                return angular.isNumber(input) ? dayNames[input] : input;
+            };
+        });
+
+        var now = new Date();
+        myApp.value("nowValue", now);
+
+        myApp.service("days", function (nowValue) {
+            this.today = nowValue.getDay();
+            this.tomorrrow = this.today + 1;
         });
 
     </script>
@@ -26,8 +47,8 @@
         <div class="page-header">
             <h3>AngularJS App</h3>
         </div>
-        <h4 ng-controller="dayCtrl">Today is {{day || "(unknown)"}}</h4>
-        <h4 ng-controller="tomorrowCtrl">Tomorrow is {{day || "(unknown)"}}</h4>
+        <h4 ng-controller="dayCtrl" highlight="Monday">Today is {{day || "(unknown)" | dayName}}</h4>
+        <h4 ng-controller="tomorrowCtrl">Tomorrow is {{day || "(unknown)" | dayName}}</h4>
 
     </div>
 </body>
