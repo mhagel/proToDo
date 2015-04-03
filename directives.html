@@ -8,44 +8,25 @@
     <link href="bootstrap-theme.css" rel="stylesheet" />
     <script>
         angular.module("exampleApp", [])
-            .controller("defaultCtrl", function ($scope) {
-                $scope.todos = [
-                    { action: "Get groceries", complete: false },
-                    { action: "Call plumber", complete: false },
-                    { action: "Buy running shoes", complete: true },
-                    { action: "Buy flowers", complete: false },
-                    { action: "Call family", complete: false }];
+            .controller("defaultCtrl", function ($scope, $location) {
+                
+                $scope.message = "Tap Me, OK?"
 
-                $scope.buttonNames = ["Red", "Green", "Blue"];
-
-                $scope.data = {
-                    rowColor: "Blue",
-                    columnColor: "Green"
-                };
-
-                $scope.handleEvent = function (e) {
-                    console.log("Event type: " + e.type);
-                    $scope.data.columnColor = e.type == "mouseover" ? "Green" : "Blue";
+            }).directive("tap", function() {
+                return function (scope, elem, attrs) {
+                    elem.on("touchstart touchend", function () {
+                        scope.$apply(attrs["tap"]);
+                    });
                 }
-
             });
     </script>
-    <style>
-        .Red { background-color: lightcoral; }
-        .Green { background-color: lightgreen;}
-        .Blue { background-color: lightblue; }
-    </style>
 </head>
 <body>
     <div id="todoPanel" class="panel" ng-controller="defaultCtrl">
         <h3 class="panel-header">To Do List</h3>
 
-        <div class="well">
-            <span ng-repeat="button in buttonNames">
-                <button class="btn btn-info" ng-click="data.rowColor = button">
-                    {{button}}
-                </button>
-            </span>
+        <div class="well" tap="message = 'Tapped!'">
+            {{message}}
         </div>
         <table class="table">
             <thead>
